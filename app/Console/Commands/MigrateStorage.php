@@ -45,7 +45,22 @@ class MigrateStorage extends Command
             $files = Storage::disk('spaces')->allFiles();
             Cache::put('do_files', json_encode($files), 600);
         }
-        $this->info("Collecting " . count($files) . " files.");
+        if (Cache::has('aws_files')) {
+            $awsFiles = json_decode(Cache::get('aws_files'), true);
+        } else {
+            $awsFiles = Storage::disk('s3')->allFiles();
+            Cache::put('aws_files', json_encode($awsFiles), 600);
+        }
+        $this->info("Collecting " . count($files) . " files from Spaces.");
+        $this->info("Collecting " . count($awsFiles) . " files from S3.");
+        $this->info("Checking files");
+        foreach ($files as $key => $value) {
+            if (in_array($value, $awsFiles)) {
+                unset($files[$key]);
+            }
+        }
+
+        $this->info("Migrating " . count($files) . " files");
         $progress = $this->output->createProgressBar(count($files));
         $progress->start();
         foreach ($files as $key => $file) {
