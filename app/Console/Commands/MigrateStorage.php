@@ -42,8 +42,9 @@ class MigrateStorage extends Command
         $this->info("Collecting " . count($files) . " files.");
         $progress = $this->output->createProgressBar(count($files));
         $progress->start();
-        foreach ($files as $file) {
-            $this->info("Copying $file");
+        foreach ($files as $key => $file) {
+            $this->info("$key. Copying $file");
+            $this->newLine();
             Storage::disk('s3')->put($file, Storage::disk('spaces')->get($file));
             $progress->advance();
             sleep(1);
