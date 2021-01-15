@@ -68,7 +68,6 @@ class MigrateStorage extends Command
                 $this->newLine(2);
                 $this->info("Copying $file");
                 Storage::disk('s3')->put($file, Storage::disk('spaces')->get($file));
-                sleep(1);
             }
             $progress->advance();
         }
