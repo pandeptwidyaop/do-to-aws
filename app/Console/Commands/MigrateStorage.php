@@ -50,6 +50,8 @@ class MigrateStorage extends Command
         $progress->start();
         foreach ($files as $key => $file) {
             if (!Storage::disk('s3')->exists($file)) {
+                $this->newLine(2);
+                $this->info("Copying $file");
                 Storage::disk('s3')->put($file, Storage::disk('spaces')->get($file));
                 sleep(1);
             }
